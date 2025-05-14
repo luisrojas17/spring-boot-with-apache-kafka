@@ -70,7 +70,7 @@ Use next commands to start Kafka containers:
 
     docker start container_id
 
-To get container id you can run next command:
+To get container id you have to run next command:
 
     docker ps -a
 
