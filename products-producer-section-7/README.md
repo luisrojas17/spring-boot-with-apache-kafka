@@ -3,10 +3,16 @@
 This repository contains Microservice application which exposes REST endpoint to create products 
 and produce events to Kafka topic.
 
-On the other hand, the Microservices application depends on Kafka brokers and Kafka topic. 
-So, when the application starts it will create Kafka topic called "products-created-topic".
-The Kafka Brokers configuration is defined into "com.acme.common.config.kafka.KafkaConfig" class 
-which defines three Kafka brokers.
+On the other hand, this module depends on Kafka brokers and Kafka topic. So, when the application starts
+it will create Kafka topic called "products-created-topic". This configuration is defined into
+"com.acme.common.config.kafka.KafkaConfig" class.
+
+The main goal in this project is to learn how to configure next characteristics:
+1. Kafka Producer Minimum Insync Replicas
+2. Kafka Producer Acknowledgment Mode
+3. Kafka Producer Retries
+4. Kafka Producer Delivery Timeout
+5. Kafka Producer Batch Size
 
 
 ## How to Run the Application
@@ -16,11 +22,11 @@ To start the application from command line you can use next commands:
 
 Using Java jar command:
 
-    ** java -jar target/products-producer-section-6-1.0.0.jar
+    ** java -jar target/products-producer-section-7-1.0.0.jar
 
 Where X means number module that you can run. For example:
 
-    ** java -jar target/products-producer-section-6-1.0.0.jar
+    ** java -jar target/products-producer-section-7-1.0.0.jar
 
 Using Maven:
 
@@ -51,21 +57,21 @@ However, it is necessary to add next plugin to your pom.xml file:
 ...
 ```
 
-# How to Start Kafka Containers
+## How to Start Kafka Containers
 Before to start the application, we need to start Kafka containers. So, you can start Kafka containers in two ways 
 from command line:
 
 1. Through Docker Compose
 2. Through Docker CLI
 
-## Docker Compose
+### Docker Compose
 To start Kafka containers you can run next command:
 
     docker-compose up -d -f $PATH_LOCATION/docker-compose_3.yml --env-file environment.env
 
 Where $PATH_LOCATION is path to docker-compose.yml file.
 
-## Docker CLI
+### Docker CLI
 Use next commands to start Kafka containers:
 
     docker start container_id
@@ -74,7 +80,7 @@ To get container id you have to run next command:
 
     docker ps -a
 
-## Starting Kafka Containers
+### Starting Kafka Containers
 After starting Kafka containers you can connect to Kafka brokers from command line:
 
     docker exec -it <container ID or name> bash
@@ -99,8 +105,7 @@ To get container id you can run next command:
 
     docker ps -a
 
-
-# Kafka Console Consumer
+### Kafka Console Consumer
 Once you connect and start Kafka brokers, go to next path:
 
     cd /opt/bitnami/kafka/bin/
@@ -111,7 +116,25 @@ To consume the events from Kafka topic run the following command:
     ./kafka-console-consumer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9094 --from-beginning -property print.key=true
     ./kafka-console-consumer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9096 --from-beginning -property print.key=true
 
-# How to Configure Kafka Producer Acknowledgements
+
+## How to Configure Kafka Producer
+Kafka Producer can be configured by two ways: 
+
+1. Adding properties to application.properties file.
+2. Or programmatically way creating Kafka config class annotated with Spring Boot annotation
+   **org.springframework.context.annotation.Configuration**.
+
+   Go to **com.acme.common.config.kafka.KafkaConfig** to get more details.
+
+   **Note: this way override any configuration defined in application.properties file.**
+
+If you choose to configure Kafka Producer programmatically you will basically have to define next:
+
+1. Define a Java Map with Producer configs. 
+2. Create a ProducerFactory with the producer config map.
+3. Create a KafkaTemplate with the producer factory.
+
+### Kafka Producer Acknowledgements
 The default value of acknowledgment (ack) mode is "1".
 In Apache Kafka, message acknowledgement modes dictate when a producer receives confirmation from the broker that 
 a message has been successfully written. The main options are acks=0, acks=1, and acks=all.
@@ -135,7 +158,7 @@ to application.properties file:
 
 This property configuration is related to minimum insync replicas configuration. Go next section to learn more.
 
-# How to Configure Kafka Producer Minimum Insync Replicas
+### Kafka Producer Minimum Insync Replicas
 Minimum insync replicas is the number of replicas that must acknowledge write to be considered successful.
 
 You can configure Kafka producer minimum insync replicas when is creating new topic by CLI:
@@ -151,3 +174,60 @@ And, to check the configuration that you just modified run next command:
     ./kafka-topics.sh --describe --bootstrap-server host.docker.internal:9092
 
 **Note: By default, the value of minimum insync replicas is 1.**
+
+### Kafka Producer Retries 
+This configuration defines the number of times to retry to send the message to Kafka broker if it fails.
+To configure it you will have to add next property to application.properties file:
+
+      spring.kafka.producer.retries
+
+      Note: Default value is 2 147 483 647
+
+On the other hand, you can specify the time in milliseconds to wait before retrying to send the message to Kafka broker.
+In other words, it is the time (in milliseconds) interval between retries. To configure it you will have to add next 
+two properties (minimum and maximum) to application.properties file:
+
+      spring.kafka.producer.properties.retry.backoff.ms
+   
+      Note: Default value is 100
+
+      spring.kafka.producer.properties.retry.backoff.max.ms
+
+      Note: Default value is 1000
+
+### Kafka Producer Delivery Timeout
+This configuration defines the maximum timeout in milliseconds to wait response for all replicas after sending the message 
+including retry operations. To configure it you will have to add next property to application.properties file:
+
+      spring.kafka.producer.properties.delivery.timeout.ms
+
+      Note: Default value is 120000 milleseconds (2 minutes).
+
+This property specifies the time for entire process which includes:
+
+1. Time to send the request
+2. Time to wait for acknowledgement and
+3. Time to retriable sent failures.
+
+This value have to be greater than spring.kafka.producer.properties.request.timeout.ms property value
+
+### Kafka Producer Batch Size
+This configuration defines message batching delays sending messages in the hope that more messages destined for 
+the same broker will be sent, allowing them to be batched into a single produce request. Batching is a compromise 
+between higher latency in return for higher throughput. Time-based batching is configured using "linger.ms", 
+and size-based batching is configured using "batch.size" in bytes.
+
+If a maximum "batch.size" in bytes is used, a request is sent when the maximum is reached, or messages have been queued 
+for longer than linger.ms (whichever comes sooner). Adding the delay allows batches to accumulate messages up to 
+the batch size.
+
+      spring.kafka.producer.properties.batch.size
+
+      Note: Default value is 16384 bytes.
+
+The linger property adds a delay in milliseconds so that larger batches of messages are accumulated and sent in a request. 
+The default is 0'
+
+      spring.kafka.producer.properties.linger.ms
+
+      Note: Default value is 0.

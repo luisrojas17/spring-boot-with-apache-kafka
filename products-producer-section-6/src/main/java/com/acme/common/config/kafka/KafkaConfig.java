@@ -18,6 +18,5 @@ public class KafkaConfig {
                 .replicas(3)
                 .configs(Map.of("min.insync.replicas", "2"))
                 .build();
-        //ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG
     }
 }

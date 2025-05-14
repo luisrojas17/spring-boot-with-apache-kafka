@@ -1,10 +1,16 @@
+# products-producer-section-6
+
 This repository contains Microservice application which exposes REST endpoint to create products
 and produce events to Kafka topic.
 
-On the other hand, the Microservices application depends on Kafka brokers and Kafka topic.
-So, when the application starts it will create Kafka topic called "products-created-topic".
-The Kafka Brokers configuration is defined into "com.acme.common.config.kafka.KafkaConfig" class
-which defines three Kafka brokers.
+On the other hand, this module depends on Kafka brokers and Kafka topic. So, when the application starts 
+it will create Kafka topic called "products-created-topic". This configuration is defined into 
+"com.acme.common.config.kafka.KafkaConfig" class.
+
+The main goal in this project is to learn how to add basic configuration to Kafka producer to:
+
+1. Create Kafka topic if not exists
+2. Configure producer to send events to Kafka topic
 
 
 ## How to Run the Application
@@ -49,30 +55,30 @@ However, it is necessary to add next plugin to your pom.xml file:
 ...
 ```
 
-# How to Start Kafka Containers
+## How to Start Kafka Containers
 Before to start the application, we need to start Kafka containers. So, you can start Kafka containers in two ways
 from command line:
 
 1. Through Docker Compose
 2. Through Docker CLI
 
-## Docker Compose
+### Docker Compose
 To start Kafka containers you can run next command:
 
     docker-compose up -d -f $PATH_LOCATION/docker-compose_3.yml --env-file environment.env
 
 Where $PATH_LOCATION is path to docker-compose.yml file.
 
-## Docker CLI
+### Docker CLI
 Use next commands to start Kafka containers:
 
     docker start container_id
 
-To get container id you can run next command:
+To get container id you have to run next command:
 
     docker ps -a
 
-## Starting Kafka Containers
+### Starting Kafka Containers
 After starting Kafka containers you can connect to Kafka brokers from command line:
 
     docker exec -it <container ID or name> bash
@@ -97,8 +103,7 @@ To get container id you can run next command:
 
     docker ps -a
 
-
-# Kafka Console Consumer
+### Kafka Console Consumer
 Once you connect and start Kafka brokers, go to next path:
 
     cd /opt/bitnami/kafka/bin/
