@@ -1,4 +1,4 @@
-# products-producer-section-7
+# products-producer-section-8
 
 This repository contains Microservice application which exposes REST endpoint to create products 
 and produce events to Kafka topic.
@@ -8,11 +8,7 @@ it will create Kafka topic called "products-created-topic". This configuration i
 "com.acme.common.config.kafka.KafkaConfig" class.
 
 The main goal in this project is to learn how to configure next characteristics:
-1. Kafka Producer Minimum Insync Replicas
-2. Kafka Producer Acknowledgment Mode
-3. Kafka Producer Retries
-4. Kafka Producer Delivery Timeout
-5. Kafka Producer Batch Size
+1. Enable Idempotency in Kafka Producer
 
 
 ## How to Run the Application
@@ -231,3 +227,47 @@ The default is 0'
       spring.kafka.producer.properties.linger.ms
 
       Note: Default value is 0.
+
+### Enable Kafka Producer Idempotency
+Idempotency is a feature in Kafka that ensures that a message is only processed once, even if it is sent multiple times.
+To enable idempotency you will have to add next property to application.properties file:
+
+      spring.kafka.producer.idempotent=true
+
+Idempotence is enabled by default if no conflicting configurations are set. If conflicting configurations are set 
+and idempotence is not explicitly enabled, idempotence is disabled. So that, if you enable explicitly idempotence 
+you will have to define next properties and values:
+
+      spring.kafka.producer.acks=all
+
+      spring.kafka.producer.max.in.flight.requests.per.connection=5
+
+If idempotence is explicitly enabled and conflicting configurations are set, a ConfigException is thrown.
+
+      org.apache.kafka.common.config.ConfigException: Must set acks to all in order to use the idempotent producer. Otherwise we cannot guarantee idempotence.
+
+      org.apache.kafka.common.config.ConfigException: Must set max.in.flight.requests.per.connection to at most 5 to use the idempotent producer.
+
+#### Inflight Requests per Connection
+The "max.inflight.requests.per.connection" setting controls the maximum number of unacknowledged requests the Kafka 
+producer can send per connection before it gets blocked waiting for an acknowledgment from the server. 
+Essentially, it limits how many produce requests can be in flight. If set to one, the producer will wait for 
+an acknowledgment after sending one message before it can send another message.
+
+There are two aspects that you need to consider before to define max inflight requests per connection.
+
+1. Higher Throughput: Increasing max.inflight.requests.per.connection can improve throughput. 
+   With more requests in flight, the producer can make better use of network resources by batching more messages 
+   and reducing the wait time for acknowledgments.
+2. Ordering Guarantees: If the value is greater than 1 and retries are configured with retries > 0, there is a chance 
+   that messages can be sent out of order if a retry occurs after a failure. This is because while one message is being 
+   retried, other messages may succeed and get written first.
+
+For use cases where order is important, particularly in partitioned data where order integrity within a partition 
+is crucial, setting this to 1 is advisable.
+
+Priority	| 	Setting<br/>max.inflight.requests.per.connection |	Justification
+--- |--------------------------------------------------| ---
+High Throughput	Higher  | (e.g., 5)	                                       |  Increases unacknowledged requests in flight
+Strong Ordering Guarantee  | 	1                                               |	Ensures order by processing one request at a time
+Balanced	| 2-3                                              |   Provides a middle ground for moderate throughput and ordering
