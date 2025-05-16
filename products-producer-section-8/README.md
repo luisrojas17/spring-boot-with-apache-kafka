@@ -18,11 +18,11 @@ To start the application from command line you can use next commands:
 
 Using Java jar command:
 
-    ** java -jar target/products-producer-section-7-1.0.0.jar
+    ** java -jar target/products-producer-section-8-1.0.0.jar
 
 Where X means number module that you can run. For example:
 
-    ** java -jar target/products-producer-section-7-1.0.0.jar
+    ** java -jar target/products-producer-section-8-1.0.0.jar
 
 Using Maven:
 
