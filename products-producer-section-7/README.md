@@ -106,7 +106,7 @@ To get container id you can run next command:
     docker ps -a
 
 ### Kafka Console Consumer
-Once you connect and start Kafka brokers, go to next path:
+Once you connect and started Kafka brokers, go to next path:
 
     cd /opt/bitnami/kafka/bin/
 
@@ -116,6 +116,16 @@ To consume the events from Kafka topic run the following command:
     ./kafka-console-consumer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9094 --from-beginning -property print.key=true
     ./kafka-console-consumer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9096 --from-beginning -property print.key=true
 
+### Kafka Console Producer
+Once you connect and started Kafka brokers, go to next path:
+
+    cd /opt/bitnami/kafka/bin/
+
+To produce the events to Kafka topic run the following command:
+
+    ./kafka-console-producer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9092 --property parse.key=true --property "key.separator=:"
+    ./kafka-console-producer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9094 --property parse.key=true --property "key.separator=:"
+    ./kafka-console-producer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9096 --property parse.key=true --property "key.separator=:"
 
 ## How to Configure Kafka Producer
 Kafka Producer can be configured by two ways: 

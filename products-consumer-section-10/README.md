@@ -1,10 +1,10 @@
-# products-consumer-section-9
+# products-consumer-section-10
 
 This repository contains consumer application which consumes events from Kafka topic. So that, 
 this module depends on Kafka topic called "products-created-topic".
 
 The main goal in this project is to learn how to configure next characteristics:
-1. Set up Kafka Consumer
+1. Handle deserializer errors. Go to KafkaConfig class to get more details.
 
 
 ## How to Run the Application
@@ -14,11 +14,11 @@ To start the application from command line you can use next commands:
 
 Using Java jar command:
 
-    ** java -jar target/products-consumer-section-9-1.0.0.jar
+    ** java -jar target/products-consumer-section-10-1.0.0.jar
 
 Where X means number module that you can run. For example:
 
-    ** java -jar target/products-consumer-section-9-1.0.0.jar
+    ** java -jar target/products-consumer-section-10-1.0.0.jar
 
 Using Maven:
 
