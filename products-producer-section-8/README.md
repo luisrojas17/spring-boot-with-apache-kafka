@@ -130,6 +130,19 @@ If you choose to configure Kafka Producer programmatically you will basically ha
 2. Create a ProducerFactory with the producer config map.
 3. Create a KafkaTemplate with the producer factory.
 
+### Bootstrap Servers List
+Bootstrap servers list corresponds to Kafka brokers (list of the servers that compose your Kafka cluster). To configure
+bootstrap servers list you will have to add next property into application.properties file:
+
+    spring.kafka.producer.bootstrap-servers=localhost:9092,localhost:9094,localhost:9096
+
+### Key and Value Serializers
+Key and value serializers work together to serialize (convert to bytes) key and value's Kafka message.
+To configure key and value serializers you can use next properties into application.properties file:
+
+      spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+      spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+
 ### Kafka Producer Acknowledgements
 The default value of acknowledgment (ack) mode is "1".
 In Apache Kafka, message acknowledgement modes dictate when a producer receives confirmation from the broker that 

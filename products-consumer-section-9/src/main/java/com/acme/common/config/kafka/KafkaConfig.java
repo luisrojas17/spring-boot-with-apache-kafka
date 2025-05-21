@@ -40,9 +40,11 @@ public class KafkaConfig {
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        configs.put(JsonDeserializer.TRUSTED_PACKAGES, env.getProperty("spring.kafka.consumer.properties.spring.json.trusted.packages"));
+        configs.put(JsonDeserializer.TRUSTED_PACKAGES,
+                env.getProperty("spring.kafka.consumer.properties.spring.json.trusted.packages"));
 
-        configs.put(ConsumerConfig.GROUP_ID_CONFIG, env.getProperty("spring.kafka.consumer.group-id"));
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG,
+                env.getProperty("spring.kafka.consumer.group-id"));
 
         return configs;
     }
@@ -53,12 +55,12 @@ public class KafkaConfig {
     }
 
     /**
-     * Use default name "kafkaListenerContainerFactory", if not Spring Boot's auto-configuration factory
+     * Use default name "kafkaListenerContainerFactory", if not Spring Boot's autoconfiguration factory
      * will use default (String) deserializer, and it will be caused next exception:
      * <br/>
      * org.springframework.messaging.converter.MessageConversionException: Cannot convert from [java.lang.String] to [] for GenericMessage
      * <br/>
-     * @return
+     * @return an instance of ConcurrentKafkaListenerContainerFactory
      */
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {

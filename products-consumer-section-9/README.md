@@ -110,4 +110,66 @@ To consume the events from Kafka topic run the following command:
 
 
 ## How to Configure Kafka Consumer
-In this section we will configure Kafka Consumer.
+Kafka Consumer can be configured by two ways:
+
+1. Adding properties to application.properties file.
+2. Or programmatically way creating Kafka config class annotated with Spring Boot annotation
+   **org.springframework.context.annotation.Configuration**.
+
+   Go to **com.acme.common.config.kafka.KafkaConfig** to get more details.
+
+   **Note: This way override any configuration defined in application.properties file.**
+
+If you choose to configure Kafka Consumer programmatically you will basically have to define next:
+
+1. Define a Java Map with Consumer configs.
+2. Create a ConsumerFactory with the consumer config map.
+3. Create a ConcurrentKafkaListenerContainerFactory with the consumer factory. It is important to use default name 
+"kafkaListenerContainerFactory", if not Spring Boot's autoconfiguration factory will use default (String) deserializer, 
+and it will be caused next exception:
+  
+**org.springframework.messaging.converter.MessageConversionException: Cannot convert from [java.lang.String] to [] for GenericMessage** 
+
+### Bootstrap Servers List
+Bootstrap servers list corresponds to Kafka brokers (list of the servers that compose your Kafka cluster). To configure 
+bootstrap servers list you will have to add next property into application.properties file: 
+
+    spring.kafka.consumer.bootstrap-servers=localhost:9092,localhost:9094,localhost:9096
+
+### Key and Value Deserializers
+Key and value deserializers work together to convert the serialized key and value from a Kafka message back into their
+original types. Deserializers (key and value) will be used by Kafka Consumer to deserialize key and value's 
+message/event received. To configure key and value deserializers you can use next properties into 
+application.properties file: 
+
+      spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+      spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+
+### Trusted Packages
+When messages in the topic have different payload schema it will be a great idea to restrict the possible payload 
+schemas consumer will accept. This is what the Spring Kafka trusted packages feature is about. 
+
+Trusted packages Spring Kafka feature is configured on the deserializer level. If trusted packages are configured, 
+then Spring will make a lookup into the type headers of the incoming message. Then, it will check that all of 
+the provided types in the message are trusted – both key and value.
+
+It essentially means that Java classes of key and value, specified in the corresponding headers, must reside inside 
+trusted packages. If everything is ok, then Spring passes the message into further deserialization. If the headers 
+are not present, then Spring will just deserialize the object and won’t check the trusted packages.
+
+To configure the trusted packages you will have to add next property into application.properties file:
+
+      spring.kafka.consumer.properties.spring.json.trusted.packages=*
+
+### Group ID
+GroupId is central to the load-balancing mechanism, enabling the distribution of partitions among consumers. 
+Consumer Groups manage the coordination, load balancing, and partition assignment among consumers within the same group.
+
+Consumer Groups consist of multiple consumers who work together to consume messages from one or more topics. 
+They enable scalability, fault tolerance, and efficient parallel processing of messages in a distributed Kafka environment.
+
+Crucially, each consumer within the group is responsible for processing only a subset of its topic, known as a partition.
+
+To configure the group id you will have to add next property into application.properties file:
+
+      spring.kafka.consumer.group-id=product-created-events
