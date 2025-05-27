@@ -25,7 +25,11 @@ To configure Kafka Brokers using Docker Compose you will have to execute next st
 
     ** mkdir $HOME_USER/kafka/docker-compose/volumes
  
-2. Execute next command:
+2. Go to next folder:
+
+    ** spring-boot-project-with-apache-kafka/docker-compose
+
+3. And execute next command:
 
     ** docker compose -f docker-compose_3.yml --env-file environment.env up
 

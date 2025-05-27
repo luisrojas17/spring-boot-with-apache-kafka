@@ -16,7 +16,7 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
     volumes:
-      - /home/luisrojas17/kafka/docker-compose/volumes/server-1:/bitnami/kafka
+      - ~/kafka/docker-compose/volumes/server-1:/bitnami/kafka
 
   kafka-2:
     container_name: kafka-2
@@ -34,7 +34,7 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
     volumes:
-      - /home/luisrojas17/kafka/docker-compose/volumes/server-2:/bitnami/kafka
+      - ~/kafka/docker-compose/volumes/server-2:/bitnami/kafka
 
   kafka-3:
     container_name: kafka-3
@@ -52,4 +52,4 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
     volumes:
-      - /home/luisrojas17/kafka/docker-compose/volumes/server-3:/bitnami/kafka
+      - ~/kafka/docker-compose/volumes/server-3:/bitnami/kafka
