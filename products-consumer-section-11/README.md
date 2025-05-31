@@ -1,4 +1,4 @@
-# products-consumer-section-10
+# products-consumer-section-11
 
 This repository contains consumer application which consumes events from Kafka topic. So that, 
 this module depends on Kafka topic called "products-created-topic".
