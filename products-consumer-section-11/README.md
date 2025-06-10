@@ -195,3 +195,18 @@ Using a DLQ is generally a good idea, but there are scenarios when it should be 
 to use a DLQ for a Queue where the exact order of messages is important, as reprocessing a DLQ message breaks the order
 of the messages on arrival.
 
+By default, Kafka creates a DLQ topic with the same name as the original topic, with "-dlt" appended to the name.
+For example, if the original topic is called "my-topic", then the DLQ topic will be called "my-topic-dlt".
+
+So, to test the DLT you will have produce an event with a bad payload. In this case, a payload that cannot be deserialized 
+to JSON. For instance, you will have to produce a String event from CLI: 
+
+      ./kafka-console-producer.sh --topic products-created-topic --bootstrap-server host.docker.internal:9094 --property parse.key=true --property "key.separator=:"
+
+Produce a String event from CLI: 1: {Any_String}
+
+And then, you will have to check the DLT topic. To consume the events from DLT run the following command:
+
+      ./kafka-console-consumer.sh --topic products-created-topic-dlt --bootstrap-server host.docker.internal:9094 --from-beginning --property print.key=true --property print.value=true
+
+And you will see the bad payload in the DLT topic.
